@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sunhp.activiti.dao.UserDao">
+
+    <resultMap type="com.sunhp.activiti.entity.User" id="UserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="username" column="userName" jdbcType="VARCHAR"/>
+        <result property="password" column="passWord" jdbcType="VARCHAR"/>
+        <result property="realname" column="realName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserMap">
+        select
+          id, userName, passWord, realName
+        from springboot.user
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserMap">
+        select
+          id, userName, passWord, realName
+        from springboot.user
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserMap">
+        select
+          id, userName, passWord, realName
+        from springboot.user
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="username != null and username != ''">
+                and userName = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and passWord = #{password}
+            </if>
+            <if test="realname != null and realname != ''">
+                and realName = #{realname}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into springboot.user(userName, passWord, realName)
+        values (#{username}, #{password}, #{realname})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update springboot.user
+        <set>
+            <if test="username != null and username != ''">
+                userName = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                passWord = #{password},
+            </if>
+            <if test="realname != null and realname != ''">
+                realName = #{realname},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from springboot.user where id = #{id}
+    </delete>
+
+    <!--批量插入,实验-->
+    <insert id="insertMult" parameterType="java.util.ArrayList">
+        insert into user
+        (userName, passWord, realName)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.username},#{item.password},now())
+        </foreach>
+    </insert>
+    <!--批量更新,实验-->
+    <insert id="updateMult" parameterType="java.util.ArrayList">
+        update user
+        set status = 1
+        <where>
+            id in
+            <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+                #{item.id}
+            </foreach>
+        </where>
+    </insert>
+
+</mapper>
