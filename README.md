@@ -1,6 +1,5 @@
-# mq
-消息队列
+# mq消息队列
 
-#1.rocketmq
+# 1.rocketmq
 
-#2.activiti,包含rabbitmq
+# 2.activiti,包含rabbitmq
