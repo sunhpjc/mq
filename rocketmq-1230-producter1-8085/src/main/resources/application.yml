@@ -1,0 +1,63 @@
+server:
+    port: 8085
+#数据源,使用druid连接池之后需要改变
+#spring:
+#  datasource:
+#    username: root
+#    password: 123456
+#    url: jdbc:mysql://localhost:3306/springboot?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+#    driver-class-name: com.mysql.jdbc.Driver
+
+spring:
+    datasource:
+        username: root
+        password: 123456
+        url: jdbc:mysql://localhost:3306/springboot?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        type: com.alibaba.druid.pool.DruidDataSource
+        initialSize: 5
+        minIdle: 5
+        maxActive: 20
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        #配置监控统计拦截的filters,去掉后监控界面的sql无法统计，还可以设置参数wall用于防火墙，log4j
+        filters: stat
+        maxPoolPreparedStatementPerConnectionSize: 20
+        useGlobalDataSourceStat: true
+        connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    #redis配置
+    redis:
+        database: 5
+        host: 192.168.18.60
+        port: 6379
+        timeout: 5000
+        jedis:
+            pool:
+                # 连接池中的最大空闲连接，默认值也是8。
+                max-idle: 500
+                # 连接池中的最小空闲连接，默认值也是0。
+                min-idle: 50
+                # 如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗尽)
+                max-active: 1000
+                # 等待可用连接的最大时间，单位毫秒，默认值为-1，表示永不超时。如果超过等待时间，则直接抛出JedisConnectionException
+                max-wait: 2000
+        password: 123456
+    profiles:
+        active: dev
+mybatis:
+    mapper-locations: classpath:mapper/*Dao.xml
+    type-aliases-package: com.sunhp.rocketmq.entity
+
+#showsql
+#logging:
+#    level:
+#        com:
+#            sunhp:
+#                activiti:
+#                    mapper: info
+

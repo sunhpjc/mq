@@ -60,7 +60,7 @@ spring:
     publisher-returns: true
 mybatis:
   mapper-locations: classpath:mapper/*Dao.xml
-  type-aliases-package: com.sunhp.activiti.entity
+  type-aliases-package: com.sunhp.activiti.com.sunhp.rocketmq1230producter18085.entity
 
 #showsql
 logging:

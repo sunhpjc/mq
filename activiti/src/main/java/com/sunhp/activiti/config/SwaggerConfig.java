@@ -25,7 +25,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 // 指定要生成api接口的包路径，这里把controller作为包路径，生成controller中的所有接口
-                .apis(RequestHandlerSelectors.basePackage("com.sunhp.activiti.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.sunhp.activiti.com.sunhp.rocketmq1230producter18085.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
