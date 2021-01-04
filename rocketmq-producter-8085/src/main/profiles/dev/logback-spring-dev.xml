@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="logback_app_name" value="jtest/springboot" />
+    <property name="LOG_PATH" value="${user.home}/${logback_app_name}/logs" />
+
+    <!-- 1.控制台输出日志 ConsoleAppender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder 默认配置为PatternLayoutEncoder -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}---%magenta([%thread])---%-5level---%blue([%c])---%green([%L])---[%msg]%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 2.输出到文件 -->
+    <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--文件路径：可使用ognl-->
+            <fileNamePattern>${LOG_PATH}/info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--每个文件最大100MB；保存60天；总文件最多20GB-->
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}---%magenta([%thread])---%-5level---%blue([%c])---%green([%L])---[%msg]%n</pattern>
+        </encoder>
+    </appender>
+</configuration>
