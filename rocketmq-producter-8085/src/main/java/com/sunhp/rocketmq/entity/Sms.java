@@ -18,6 +18,10 @@ public class Sms implements Serializable {
     */
     private Long id;
     /**
+     * 批次号
+     */
+    private String batchNo;
+    /**
     * 电话号码
     */
     private String phone;

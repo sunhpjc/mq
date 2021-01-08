@@ -4,16 +4,26 @@ import com.sunhp.rocketmq.entity.Sms;
 import com.sunhp.rocketmq.dao.SmsDao;
 import com.sunhp.rocketmq.enums.ResponseCodeEnum;
 import com.sunhp.rocketmq.service.SmsService;
+import com.sunhp.rocketmq.utils.ListUtil;
+import com.sunhp.rocketmq.utils.RedisUtil;
+import com.sunhp.rocketmq.utils.ThreadPoolExecutorUtil;
 import com.sunhp.rocketmq.vo.response.ResultVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * (Sms)表服务实现类
@@ -26,7 +36,13 @@ public class SmsServiceImpl implements SmsService {
     private static final Logger logger = LoggerFactory.getLogger(SmsServiceImpl.class);
 
     @Resource
+    private ThreadPoolExecutorUtil threadPoolExecutorUtil;
+    @Resource
     private SmsDao smsDao;
+    @Resource
+    private PlatformTransactionManager transactionManager;
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
     public Sms queryById(Long id) {
@@ -66,7 +82,6 @@ public class SmsServiceImpl implements SmsService {
         }
         try {
             this.smsDao.insertBatch(smsList);
-            int i = 8/0;
         } catch (Exception e) {
             logger.error("短信批量入库失败{}",e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -79,13 +94,101 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public ResultVO buildSms() {
         List<Sms> smsList = new ArrayList<>();
+        String batchNo = redisUtil.generatorId();
         for (int i = 0; i < 10; i++) {
             Sms sms = new Sms();
+            sms.setBatchNo(batchNo);
             sms.setPhone("1878426891"+i);
             sms.setContent("测试内容："+i);
             smsList.add(sms);
         }
         smsDao.insertBatch(smsList);
+
+        return new ResultVO(ResponseCodeEnum.SUCCESS);
+    }
+
+    /**
+     * 测试多线程插入数据
+     *
+     * @return
+     */
+    @Override
+    public ResultVO buildSmsTest() {
+        ResultVO resultVO = new ResultVO(ResponseCodeEnum.UNEXPECTED_EXCEPTION);
+        List<Sms> smsList = new ArrayList<>();
+        String batchNo = redisUtil.generatorId();
+        for (int i = 0; i < 200000; i++) {
+            Sms sms = new Sms();
+            sms.setBatchNo(batchNo);
+            sms.setPhone("1878426891"+i);
+            sms.setContent("测试内容："+i);
+            smsList.add(sms);
+        }
+/*        logger.info("单线程执行开始");
+        long startTime1 = System.currentTimeMillis();
+        smsDao.insertBatch(smsList);
+        long endTime1 = System.currentTimeMillis();
+//        logger.info("当前线程：{}",Thread.currentThread().getName());
+        logger.info("单线程耗时：{}ms",endTime1 - startTime1);*/
+
+        logger.info("多线程执行开始");
+        List<List<Sms>> lists = ListUtil.listSplit(smsList, 2000, 2000);
+        ThreadPoolExecutor pool = threadPoolExecutorUtil.getInstance();
+        long startTime2 = System.currentTimeMillis();
+
+        CountDownLatch rollBackLatch = new CountDownLatch(1);
+        CountDownLatch mainThreadLatch = new CountDownLatch(1);
+        AtomicBoolean rollBackFlag = new AtomicBoolean(false);
+        for (int i = 0; i < lists.size(); i++){
+            List<Sms> sms = lists.get(i);
+            pool.execute(()->{
+                if(rollBackFlag.get()){
+                    logger.info("线程异常，数据回滚");
+                    return;//如果其它线程报错，就停止线程
+                }
+                DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
+                //事务隔离级别，开启新事务，这样会比较安全些
+                defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+                //获取事务状态
+                TransactionStatus status = transactionManager.getTransaction(defaultTransactionDefinition);
+                try {
+                    smsDao.insertBatch(sms);
+                    mainThreadLatch.countDown();
+                    rollBackLatch.await();//线程等待
+                    if(rollBackFlag.get()){
+                        transactionManager.rollback(status);
+                    }
+                    else {
+                        transactionManager.commit(status);
+                    }
+                } catch (Exception e) {
+                    rollBackFlag.set(true);
+                    rollBackLatch.countDown();
+                    mainThreadLatch.countDown();
+                    transactionManager.rollback(status);
+
+                    logger.error("短信入库失败，{}",e);
+                }
+            });
+//            if(i == 5){
+//                int j = 8/0;//验证回滚通过
+//            }
+        }
+//        int j = 8/0;//验证回滚通过
+        if (!rollBackFlag.get()){
+//            int j = 8/0;//验证回滚通过
+            try {
+                mainThreadLatch.await();
+            } catch (InterruptedException e) {
+                logger.error("系统异常InterruptedException,{}",e);
+            }
+            rollBackLatch.countDown();
+//            int j = 8/0;//在这里出现异常无法回滚
+        }
+//        int k = 8/0;//在这里出现异常无法回滚
+
+        long endTime2 = System.currentTimeMillis();
+        logger.info("多线程耗时：{}ms",endTime2 - startTime2);
 
         return new ResultVO(ResponseCodeEnum.SUCCESS);
     }

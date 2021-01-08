@@ -40,7 +40,17 @@ public interface SmsService {
 
     ResultVO insertBatch(List<Sms> smsList);
 
+    /**
+     * 测试构造数据
+     * @return
+     */
     ResultVO buildSms();
+
+    /**
+     * 测试多线程插入数据
+     * @return
+     */
+    ResultVO buildSmsTest();
 
     /**
      * 修改数据

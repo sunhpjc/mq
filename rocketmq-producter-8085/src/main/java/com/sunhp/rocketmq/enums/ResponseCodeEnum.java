@@ -14,7 +14,11 @@ public enum ResponseCodeEnum {
     PARAM_ERROR("1002","参数错误"),
     REQUEST_PARAM_FAILED("2000","请求参数缺失"),
     NULLPOINT("5000","空指针异常"),
-    UNEXPECTED_EXCEPTION("500", "系统发生异常，请联系管理员！")
+    UNEXPECTED_EXCEPTION("500", "系统发生异常，请联系管理员！"),
+
+    //三方组件
+    JEDIS_ERROR("9000","获取jedis实例失败"),
+    REDIS_ID_ERROR("9001","redis生成唯一ID失败")
     ;
     ResponseCodeEnum(String code,String msg){
         this.code = code;

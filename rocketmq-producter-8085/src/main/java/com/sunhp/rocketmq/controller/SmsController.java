@@ -2,6 +2,7 @@ package com.sunhp.rocketmq.controller;
 
 import com.sunhp.rocketmq.entity.Sms;
 import com.sunhp.rocketmq.service.SmsService;
+import com.sunhp.rocketmq.vo.request.SmsRequestVo;
 import com.sunhp.rocketmq.vo.response.ResultVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,8 +31,8 @@ public class SmsController {
 
     @PostMapping("selectOne")
     @ApiOperation(value = "根据id查询单条短信")
-    public Sms selectOne(@RequestBody @Param("id") Long id) {
-        return this.smsService.queryById(id);
+    public Sms selectOne(@RequestBody SmsRequestVo smsRequestVo) {
+        return this.smsService.queryById(smsRequestVo.getId());
     }
 
     @PostMapping("insertSmsBatch")
@@ -44,5 +45,11 @@ public class SmsController {
     @ApiOperation(value = "测试使用，构造短信")
     public ResultVO buildSms(){
         return smsService.buildSms();
+    }
+
+    @GetMapping("buildSmsTest")
+    @ApiOperation(value = "测试使用(多线程)，构造短信")
+    public ResultVO buildSmsTest(){
+        return smsService.buildSmsTest();
     }
 }
