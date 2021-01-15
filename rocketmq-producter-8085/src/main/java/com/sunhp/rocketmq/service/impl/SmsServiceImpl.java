@@ -1,5 +1,6 @@
 package com.sunhp.rocketmq.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sunhp.rocketmq.entity.Sms;
 import com.sunhp.rocketmq.dao.SmsDao;
 import com.sunhp.rocketmq.enums.ResponseCodeEnum;
@@ -8,19 +9,25 @@ import com.sunhp.rocketmq.utils.ListUtil;
 import com.sunhp.rocketmq.utils.RedisUtil;
 import com.sunhp.rocketmq.utils.ThreadPoolExecutorUtil;
 import com.sunhp.rocketmq.vo.response.ResultVO;
+import org.apache.ibatis.cursor.Cursor;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,8 +64,25 @@ public class SmsServiceImpl implements SmsService {
      * @return 对象列表
      */
     @Override
-    public List<Sms> queryAllByLimit(int offset, int limit) {
-        return this.smsDao.queryAllByLimit(offset, limit);
+    public List<Sms> queryAllByLimit(int offset, int limit, int status) {
+        return this.smsDao.queryAllByLimit(offset, limit, status);
+    }
+
+    /**
+     * 流式查询数据
+     *
+     * @param limit
+     * @return
+     */
+    @Override
+    @Transactional
+    public ResultVO smsCursor(int limit) {
+        Cursor<Sms> smsCursor = smsDao.smsCursor(limit);
+        smsCursor.forEach(sms -> {
+            System.out.println(sms.toString());
+        });
+        logger.info("======{},状态{},是否取完{}",smsCursor.getCurrentIndex(),smsCursor.isOpen(),smsCursor.isConsumed());
+        return null;
     }
 
     /**
@@ -203,6 +227,22 @@ public class SmsServiceImpl implements SmsService {
     public Sms update(Sms sms) {
         this.smsDao.update(sms);
         return this.queryById(sms.getId());
+    }
+
+    @Override
+    public ResultVO updateBatch(List<Sms> smsList, int status) {
+        ResultVO resultVO = new ResultVO(ResponseCodeEnum.UNEXPECTED_EXCEPTION);
+        Map<String,Object> map = new HashMap<>();
+        map.put("status",status);
+        map.put("smsList",smsList);
+
+        try {
+            smsDao.updateBatch(map);
+            resultVO = new ResultVO(ResponseCodeEnum.SUCCESS);
+        } catch (Exception e) {
+            logger.error("更新短信状态为:{},更新失败,{}===>短信内容:{}",status,e, JSONObject.toJSONString(smsList));
+        }
+        return resultVO;
     }
 
     /**

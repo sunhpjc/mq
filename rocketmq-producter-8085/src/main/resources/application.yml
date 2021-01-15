@@ -52,6 +52,23 @@ spring:
 mybatis:
     mapper-locations: classpath:mapper/*Dao.xml
     type-aliases-package: com.sunhp.rocketmq.entity
+#===========使用官方Client时使用此配置===============
+#rocket:
+#    group-name: smsGroup
+#    name-server: 192.168.18.60:9876;192.168.18.61:9876
+#    sms-topic: smsTopic
+#    sync-retry-times: 1 #同步发送失败重试次数
+#    async-retry-times: 1 #异步发送失败重试次数
+#===========使用官方Client时使用此配置===============
+
+#=============使用rocketmqTemplate时使用此配置==========
+rocketmq:
+    #========生产者
+    name-server: 192.168.18.60:9876;192.168.18.61:9876
+    producer:
+        group: smsGroup
+#=============使用rocketmqTemplate时使用此配置==========
+
 
 #showsql
 #logging:

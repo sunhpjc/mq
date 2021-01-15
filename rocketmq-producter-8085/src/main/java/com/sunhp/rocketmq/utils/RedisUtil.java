@@ -29,6 +29,8 @@ import java.util.*;
 public class RedisUtil {
     private static final Logger logger = LoggerFactory.getLogger(RedisUtil.class);
 
+    private static final int INT_1 = -1;
+
     @Value("${spring.redis.prefix}")
     private String cachePrefix;
 
@@ -270,7 +272,7 @@ public class RedisUtil {
         String dateFormat = simpleDateFormat.format(new Date());
         generatorKey = String.format("%s:%s", generatorKey, dateFormat);
         // 加锁
-        String identifier = addLockInner(jedis, generatorKey);
+        String identifier = addLockInner(jedis, generatorKey,INT_1);
         if(StringUtils.isBlank(identifier)){
             logger.error("从redis中没有获取到分布式锁，generatorKey:{}", generatorKey);
             throw new RuntimeException(String.format("从redis中没有获取到分布式锁，generatorKey:%s", generatorKey));
@@ -320,7 +322,18 @@ public class RedisUtil {
      */
     public String addLock(Jedis jedis, String keyNoPrefix) {
         keyNoPrefix=cachePrefix+keyNoPrefix;
-        return this.addLockInner(jedis, keyNoPrefix);
+        return this.addLockInner(jedis, keyNoPrefix,INT_1);
+    }
+
+    /**
+     * 加锁（消息队列，去掉redis）210112
+     * @param keyNoPrefix
+     * @return
+     */
+    public String addLockMq(String keyNoPrefix,long timeoutParam) {
+        Jedis jedis = getJedis();
+        keyNoPrefix=cachePrefix+keyNoPrefix;
+        return this.addLockInner(jedis, keyNoPrefix, timeoutParam);
     }
     /**
      * Tips: 加锁 内部使用
@@ -328,9 +341,12 @@ public class RedisUtil {
      * @param key 锁的key
      * @return 锁标识
      */
-    private String addLockInner(Jedis jedis, String key) {
+    private String addLockInner(Jedis jedis, String key, long timeoutParam) {
         long acquireTimeout = 5000; // 获取超时时间
         long timeout = 5000; // 锁的超时时间
+        if(INT_1 != timeoutParam){
+            timeout = timeoutParam;
+        }
         if (jedis == null) {
             jedis = getJedis();
             if (jedis == null) {
@@ -386,6 +402,18 @@ public class RedisUtil {
      * @param identifier 释放锁的标识
      */
     public boolean releaseLock(Jedis jedis, String lockNameNoPrefix, String identifier) {
+        lockNameNoPrefix=cachePrefix+lockNameNoPrefix;
+        return this.releaseLockInner(jedis, lockNameNoPrefix, identifier);
+    }
+
+    /**
+     * 解锁（消息队列，去掉redis）210112
+     * @param lockNameNoPrefix
+     * @param identifier
+     * @return
+     */
+    public boolean releaseLockMq(String lockNameNoPrefix, String identifier) {
+        Jedis jedis = getJedis();
         lockNameNoPrefix=cachePrefix+lockNameNoPrefix;
         return this.releaseLockInner(jedis, lockNameNoPrefix, identifier);
     }

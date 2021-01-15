@@ -6,6 +6,7 @@ import com.sunhp.rocketmq.vo.request.SmsRequestVo;
 import com.sunhp.rocketmq.vo.response.ResultVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.cursor.Cursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Param;
@@ -42,13 +43,13 @@ public class SmsController {
     }
 
     @GetMapping("buildSms")
-    @ApiOperation(value = "测试使用，构造短信")
+    @ApiOperation(value = "测试使用，构造短信(10条)")
     public ResultVO buildSms(){
         return smsService.buildSms();
     }
 
     @GetMapping("buildSmsTest")
-    @ApiOperation(value = "测试使用(多线程)，构造短信")
+    @ApiOperation(value = "测试使用(多线程)，构造短信（200000万条）")
     public ResultVO buildSmsTest(){
         return smsService.buildSmsTest();
     }

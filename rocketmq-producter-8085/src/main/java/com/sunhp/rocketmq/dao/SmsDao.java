@@ -3,8 +3,10 @@ package com.sunhp.rocketmq.dao;
 import com.sunhp.rocketmq.entity.Sms;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.cursor.Cursor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * (Sms)表数据库访问层
@@ -30,8 +32,14 @@ public interface SmsDao {
      * @param limit 查询条数
      * @return 对象列表
      */
-    List<Sms> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
+    List<Sms> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit, @Param("status") int status);
 
+    /**
+     * 流式查询数据
+     * @param limit
+     * @return
+     */
+    Cursor<Sms> smsCursor(@Param("limit") int limit);
 
     /**
      * 通过实体作为筛选条件查询
@@ -58,6 +66,12 @@ public interface SmsDao {
      * @return 影响行数
      */
     int update(Sms sms);
+
+    /**
+     * 批量修改数据
+     * @param param
+     */
+    void updateBatch(Map<String,Object> param);
 
     /**
      * 通过主键删除数据

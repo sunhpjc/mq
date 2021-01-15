@@ -18,7 +18,8 @@ public enum ResponseCodeEnum {
 
     //三方组件
     JEDIS_ERROR("9000","获取jedis实例失败"),
-    REDIS_ID_ERROR("9001","redis生成唯一ID失败")
+    REDIS_ID_ERROR("9001","redis生成唯一ID失败"),
+    ROCKETMQ_ERROR("9010","rocketMQ异常")
     ;
     ResponseCodeEnum(String code,String msg){
         this.code = code;

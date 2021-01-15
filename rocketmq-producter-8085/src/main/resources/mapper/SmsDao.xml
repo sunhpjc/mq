@@ -11,6 +11,7 @@
 </sql>
     <resultMap type="com.sunhp.rocketmq.entity.Sms" id="SmsMap">
         <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="batchNo" column="batchNo" jdbcType="VARCHAR"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
         <result property="content" column="content" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="TINYINT"/>
@@ -29,6 +30,7 @@
         select
           id, batchNo, phone, content, status
         from springboot.sms
+        where status = #{status}
         limit #{offset}, #{limit}
     </select>
 
@@ -93,5 +95,22 @@
     <delete id="deleteById">
         delete from springboot.sms where id = #{id}
     </delete>
+    <!--流式查询数据-->
+    <select id="smsCursor" resultMap="SmsMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        sms
+        where status = 0
+        limit #{limit}
+    </select>
+    <update id="updateBatch" parameterType="java.util.Map">
+        update sms
+        set status = #{status}
+        where id in
+        <foreach collection="smsList" item="sms" open="(" close=")" separator=",">
+            #{sms.id}
+        </foreach>
+    </update>
 
 </mapper>

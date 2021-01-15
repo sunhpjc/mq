@@ -2,6 +2,7 @@ package com.sunhp.rocketmq.service;
 
 import com.sunhp.rocketmq.entity.Sms;
 import com.sunhp.rocketmq.vo.response.ResultVO;
+import org.apache.ibatis.cursor.Cursor;
 
 import java.util.List;
 
@@ -28,7 +29,14 @@ public interface SmsService {
      * @param limit 查询条数
      * @return 对象列表
      */
-    List<Sms> queryAllByLimit(int offset, int limit);
+    List<Sms> queryAllByLimit(int offset, int limit, int status);
+
+    /**
+     * 流式查询数据
+     * @param limit
+     * @return
+     */
+    ResultVO smsCursor(int limit);
 
     /**
      * 新增数据
@@ -59,6 +67,14 @@ public interface SmsService {
      * @return 实例对象
      */
     Sms update(Sms sms);
+
+    /**
+     * 批量修改数据
+     * @param smsList
+     * @param status
+     * @return
+     */
+    ResultVO updateBatch(List<Sms> smsList, int status);
 
     /**
      * 通过主键删除数据

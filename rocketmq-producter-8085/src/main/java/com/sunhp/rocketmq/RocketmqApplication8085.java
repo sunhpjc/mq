@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
-public class Rocketmq1230Producter18085Application {
+public class RocketmqApplication8085 {
 
     public static void main(String[] args) {
-        SpringApplication.run(Rocketmq1230Producter18085Application.class, args);
+        SpringApplication.run(RocketmqApplication8085.class, args);
     }
 
 }
