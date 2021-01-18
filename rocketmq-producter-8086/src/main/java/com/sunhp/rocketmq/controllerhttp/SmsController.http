@@ -1,0 +1,30 @@
+###
+GET http://localhost:80/api/item?id=99
+Accept: application/json
+
+
+
+### 批量插入短信
+POST http://localhost:8085/sms/insertSmsBatch
+Content-Type: application/json
+
+[
+{
+    "content": "测试1",
+    "phone": "13659879583"
+},
+{
+     "content": "测试1",
+     "phone": "13659879583"
+}
+]
+
+### 根据id获取单条短信(不可用)
+POST http://localhost:8085/sms/selectOne
+Content-Type: application/json
+
+{
+  "id": 1
+}
+### swagger地址
+# http://localhost:8085/swagger-ui.html#
