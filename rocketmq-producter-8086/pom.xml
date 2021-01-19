@@ -8,7 +8,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>rocketmq-producter-8085</artifactId>
+    <artifactId>rocketmq-producter-8086</artifactId>
 
     <properties>
         <java.version>1.8</java.version>

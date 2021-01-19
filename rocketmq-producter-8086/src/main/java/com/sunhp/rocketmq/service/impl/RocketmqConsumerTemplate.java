@@ -2,8 +2,10 @@ package com.sunhp.rocketmq.service.impl;
 
 import com.sunhp.rocketmq.entity.Sms;
 import com.sunhp.rocketmq.service.SmsService;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.apache.rocketmq.spring.core.RocketMQPushConsumerLifecycleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,7 @@ import java.util.List;
 @RocketMQMessageListener(topic = "topicSms",//topic：和消费者发送的topic相同
         consumerGroup = "smsConsumerGroup", //group：不用和生产者group相同
         selectorExpression = "tagSms")//tag,"*"代表所有
-public class RocketmqConsumerTemplate implements RocketMQListener<Sms> {
+public class RocketmqConsumerTemplate implements RocketMQListener<Sms>, RocketMQPushConsumerLifecycleListener {
     private static final Logger logger = LoggerFactory.getLogger(RocketmqConsumerTemplate.class);
 
     private static final int SIZE = 5;
@@ -37,5 +39,10 @@ public class RocketmqConsumerTemplate implements RocketMQListener<Sms> {
 //        logger.info("===============================分批次=========================================");
         logger.info("消费消息,{}",sms.toString());
         smsService.update(sms, INT_1);
+    }
+
+    @Override
+    public void prepareStart(DefaultMQPushConsumer consumer) {
+        consumer.setConsumeMessageBatchMaxSize(10);
     }
 }
