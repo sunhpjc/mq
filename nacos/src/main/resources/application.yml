@@ -1,0 +1,6 @@
+server:
+    port: 8081
+nacos:
+    config:
+        type: yaml
+        server-addr: 192.168.18.61:8848

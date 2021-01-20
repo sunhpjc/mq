@@ -2,4 +2,4 @@
 
 # 1.rocketmq
 
-# 2.activiti,包含rabbitmq
+# 2.activiti里面包含rabbitmq

@@ -22,24 +22,24 @@ import redis.clients.jedis.JedisPoolConfig;
 @Data
 public class RedisConfig {
     private static Logger logger = LoggerFactory.getLogger(RedisConfig.class);
-    @Value("${spring.redis.host}")
+//    @Value("${spring.redis.host}")
     private String host;
-    @Value("${spring.redis.port}")
+//    @Value("${spring.redis.port}")
     private int port;
-    @Value("${spring.redis.password}")
+//    @Value("${spring.redis.password}")
     private String password;
-    @Value("${spring.redis.timeout}")
+//    @Value("${spring.redis.timeout}")
     private int timeout;
-    @Value("${spring.redis.database}")
+//    @Value("${spring.redis.database}")
     private int database;
 
-    @Value("${spring.redis.max-active}")
+//    @Value("${spring.redis.max-active}")
     private int maxActive;
-    @Value("${spring.redis.max-idle}")
+//    @Value("${spring.redis.max-idle}")
     private int maxIdle;
-    @Value("${spring.redis.min-idle}")
+//    @Value("${spring.redis.min-idle}")
     private int minIdle;
-    @Value("${spring.redis.max-wait}")
+//    @Value("${spring.redis.max-wait}")
     private int maxWait;
 
     @Bean
