@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sunhp.drools.mapper.SmsMapper">
+
+    <sql id="Base_Column_List">
+	id,
+	batchNo,
+	phone,
+	content,
+	`status`
+</sql>
+    <resultMap type="com.sunhp.drools.entity.Sms" id="SmsMap">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="batchNo" column="batchNo" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" parameterType="java.lang.Long" resultMap="SmsMap">
+        select
+        id, batchNo, phone, content, status
+        from springboot.sms
+        where id = #{id}
+    </select>
+
+</mapper>
