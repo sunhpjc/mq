@@ -1,9 +1,11 @@
 package com.sunhp.rocketmq.controller;
 
 import com.sunhp.rocketmq.entity.Sms;
+import com.sunhp.rocketmq.enums.ResponseCodeEnum;
 import com.sunhp.rocketmq.service.SmsService;
 import com.sunhp.rocketmq.vo.request.SmsRequestVo;
 import com.sunhp.rocketmq.vo.response.ResultVO;
+import com.sunhp.rocketmq.vo.response.SmsBack;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.cursor.Cursor;
@@ -49,8 +51,35 @@ public class SmsController {
     }
 
     @GetMapping("buildSmsTest")
-    @ApiOperation(value = "测试使用(多线程)，构造短信（10000万条）")
+    @ApiOperation(value = "测试使用(多线程)，构造短信（10000条）")
     public ResultVO buildSmsTest(){
         return smsService.buildSmsTest();
     }
+
+    @PostMapping("smsback")
+    @ApiOperation(value = "根据批次号读取数据并修改数据状态，压测")
+    /**
+     * 在分布式环境下需要加分布式锁才能保证数据不重复
+     * 或者一次查出所有数据，使用流式查询
+     *
+     * smsBack(流式)和smsBack1做内存消耗比较
+     */
+    public ResultVO<List<SmsBack>> smsBack(){
+        List<SmsBack> smsBacks = smsService.smsListBack();
+        return new ResultVO<>(ResponseCodeEnum.SUCCESS, smsBacks);
+    }
+
+    @PostMapping("smsback1")
+    @ApiOperation(value = "根据批次号读取数据并修改数据状态，压测")
+    /**
+     * 在分布式环境下需要加分布式锁才能保证数据不重复
+     * 或者一次查出所有数据，使用流式查询
+     *
+     * smsBack(流式)和smsBack1做内存消耗比较
+     */
+    public ResultVO<List<Sms>> smsBack1(){
+        List<Sms> smsBacks = smsService.smsListBack1();
+        return new ResultVO<>(ResponseCodeEnum.SUCCESS, smsBacks);
+    }
+
 }

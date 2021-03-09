@@ -50,6 +50,18 @@ public interface SmsDao {
     Cursor<Sms> smsCursor(@Param("limit") int limit);
 
     /**
+     * 流式返回所有数据
+     * @return
+     */
+    Cursor<Sms> smsCursorBack();
+
+    /**
+     * 返回所有数据
+     * @return
+     */
+    List<Sms> smsBack();
+
+    /**
      * 通过实体作为筛选条件查询
      *
      * @param sms 实例对象

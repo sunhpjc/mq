@@ -126,5 +126,19 @@
         order by id desc
         limit 5
     </select>
+    <select id="smsCursorBack" resultMap="SmsMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        sms
+        where status = 0
+    </select>
+    <select id="smsBack" resultMap="SmsMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        sms
+        where status = 0
+    </select>
 
 </mapper>

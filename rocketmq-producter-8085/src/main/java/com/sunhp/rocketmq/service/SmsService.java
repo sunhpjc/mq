@@ -2,6 +2,7 @@ package com.sunhp.rocketmq.service;
 
 import com.sunhp.rocketmq.entity.Sms;
 import com.sunhp.rocketmq.vo.response.ResultVO;
+import com.sunhp.rocketmq.vo.response.SmsBack;
 import org.apache.ibatis.cursor.Cursor;
 
 import java.util.List;
@@ -91,5 +92,17 @@ public interface SmsService {
      * @return 是否成功
      */
     boolean deleteById(Object id);
+
+    /**
+     * smsListBack和smsListBack1比较内存消耗
+     * @return
+     */
+    List<SmsBack> smsListBack();
+
+    /**
+     * smsListBack和smsListBack1比较内存消耗
+     * @return
+     */
+    List<Sms> smsListBack1();
 
 }

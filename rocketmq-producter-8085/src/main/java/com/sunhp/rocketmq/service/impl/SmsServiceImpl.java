@@ -9,6 +9,7 @@ import com.sunhp.rocketmq.utils.ListUtil;
 import com.sunhp.rocketmq.utils.RedisUtil;
 import com.sunhp.rocketmq.utils.ThreadPoolExecutorUtil;
 import com.sunhp.rocketmq.vo.response.ResultVO;
+import com.sunhp.rocketmq.vo.response.SmsBack;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -141,7 +142,7 @@ public class SmsServiceImpl implements SmsService {
         ResultVO resultVO = new ResultVO(ResponseCodeEnum.UNEXPECTED_EXCEPTION);
         List<Sms> smsList = new ArrayList<>();
         String batchNo = redisUtil.generatorId();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 50000; i++) {
             Sms sms = new Sms();
             sms.setBatchNo(batchNo);
             sms.setPhone("1878426891"+i);
@@ -267,5 +268,30 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public boolean deleteById(Object id) {
         return this.smsDao.deleteById(id) > 0;
+    }
+
+    /**
+     * smsListBack和smsListBack1比较内存消耗
+     * @return
+     */
+    @Override
+    @Transactional
+    public List<SmsBack> smsListBack() {
+        List<SmsBack> smsBacks = new ArrayList<>();
+        Cursor<Sms> smsCursor = smsDao.smsCursorBack();
+        smsCursor.forEach(sms -> {
+            SmsBack smsBack = new SmsBack(sms.getBatchNo(), sms.getPhone(), sms.getStatus());
+            smsBacks.add(smsBack);
+        });
+        logger.info("======{},状态{},是否取完{}",smsCursor.getCurrentIndex(),smsCursor.isOpen(),smsCursor.isConsumed());
+        return smsBacks;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<Sms> smsListBack1(){
+        return smsDao.smsBack();
     }
 }
