@@ -48,6 +48,13 @@
             <version>2.2.1-SNAPSHOT</version>
         </dependency>
 
+        <!--hutool工具类-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.6.3</version>
+        </dependency>
+
 
     </dependencies>
 

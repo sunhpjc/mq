@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sunhp.rocketmq.dao.SmsStatisticsDao">
+
+    <resultMap type="com.sunhp.rocketmq.entity.SmsStatistics" id="SmsStatisticsMap">
+        <result property="id" column="id" jdbcType="OTHER"/>
+        <result property="timeFlag" column="time_flag" jdbcType="VARCHAR"/>
+        <result property="smsTotal" column="sms_total" jdbcType="INTEGER"/>
+        <result property="smsSuccess" column="sms_success" jdbcType="INTEGER"/>
+        <result property="previousId" column="previous_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createUser" column="create_user" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateUser" column="update_user" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="BaseColumn">
+        id, time_flag, sms_total, sms_success, previous_id, status, create_time, create_user, update_time, update_user
+    </sql>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SmsStatisticsMap">
+        select
+          id, time_flag, sms_total, sms_success, previous_id, status, create_time, create_user, update_time, update_user
+        from springboot.sms_statistics
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SmsStatisticsMap">
+        select
+          id, time_flag, sms_total, sms_success, previous_id, status, create_time, create_user, update_time, update_user
+        from springboot.sms_statistics
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SmsStatisticsMap">
+        select
+          id, time_flag, sms_total, sms_success, previous_id, status, create_time, create_user, update_time, update_user
+        from springboot.sms_statistics
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="timeFlag != null">
+                and time_flag = #{timeFlag}
+            </if>
+            <if test="smsTotal != null">
+                and sms_total = #{smsTotal}
+            </if>
+            <if test="smsSuccess != null">
+                and sms_success = #{smsSuccess}
+            </if>
+            <if test="previousId != null">
+                and previous_id = #{previousId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="createUser != null and createUser != ''">
+                and create_user = #{createUser}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+                and update_user = #{updateUser}
+            </if>
+        </where>
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="update1">
+        update springboot.sms_statistics
+        <set>
+            <if test="timeFlag != null">
+                time_flag = #{timeFlag},
+            </if>
+            <if test="smsTotal != null">
+                sms_total = #{smsTotal},
+            </if>
+            <if test="smsSuccess != null">
+                sms_success = #{smsSuccess},
+            </if>
+            <if test="previousId != null">
+                previous_id = #{previousId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createUser != null and createUser != ''">
+                create_user = #{createUser},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+                update_user = #{updateUser},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from springboot.sms_statistics where id = #{id}
+    </delete>
+
+
+
+    <!--获取上一条数据统计的最后一个id-->
+    <select id="getPreviousId" resultMap="SmsStatisticsMap">
+        SELECT
+            <include refid="BaseColumn"></include>
+        FROM
+            sms_statistics
+        WHERE
+            status = 1
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into springboot.sms_statistics(time_flag, sms_total, sms_success, previous_id, status, create_time, create_user, update_time, update_user)
+        values (#{timeFlag}, #{smsTotal}, #{smsSuccess}, #{previousId}, #{status}, now(), #{createUser}, now(), #{updateUser})
+    </insert>
+
+    <!--更新操作-->
+    <update id="update" parameterType="com.sunhp.rocketmq.entity.SmsStatistics">
+        update sms_statistics
+        set
+            sms_total = #{smsTotal,jdbcType=BIGINT},
+            sms_success = #{smsSuccess,jdbcType=BIGINT}
+        where
+            id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByTime" parameterType="SmsStatistics">
+        update sms_statistics
+        set
+        sms_total = #{smsTotal,jdbcType=BIGINT},
+        sms_success = #{smsSuccess,jdbcType=BIGINT}
+        where
+        DATE_FORMAT(time_flag,'%Y-%m-%d %H:00:00') = #{timeFlag,jdbcType=TIMESTAMP}
+    </update>
+
+</mapper>
