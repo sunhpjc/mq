@@ -34,7 +34,8 @@ public class RabbitmqProducer implements RabbitTemplate.ConfirmCallback {
     private BeanFactory beanFactory;
 
     @GetMapping(value = "/sendMessage")
-    public String sendMessage(){
+    public Boolean sendMessage(){
+        boolean flag = false;
         Map<String, String> map = new HashMap<>();
         map.put("1", "消息1");
         map.put("2","消息2");
@@ -43,22 +44,23 @@ public class RabbitmqProducer implements RabbitTemplate.ConfirmCallback {
         RabbitTemplate rabbitTemplate = beanFactory.getBean(RabbitTemplate.class);
         rabbitTemplate.setConfirmCallback(this::confirm);
 
-        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+        String reqNo = UUID.randomUUID().toString();
+        CorrelationData correlationData = new CorrelationData(reqNo);
         try {
             rabbitTemplate.convertAndSend("smsDirectExchange","smsDirectRouting", map, correlationData);
+            flag = true;
         } catch (AmqpException e) {
-            logger.info("发送消息异常：{}", e);
+            logger.info("发送消息异常,消息编号:{},异常:{}" ,reqNo ,e);
         }
-        return "Success";
+        return flag;
     }
 
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String s) {
-        logger.info("=======>发送消息结果{}", s);
         if(ack){
-            logger.info("消息发送成功");
+            logger.info("生产者消息发送成功,消息编号:{}", correlationData.getId());
         }else {
-            logger.info("消息发送失败");
+            logger.info("生产者消息发送失败,消息编号:{}", correlationData.getId());
         }
     }
 }
