@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -33,8 +34,9 @@ public class RabbitmqProducer implements RabbitTemplate.ConfirmCallback {
     @Autowired
     private BeanFactory beanFactory;
 
-    @GetMapping(value = "/sendMessage")
-    public Boolean sendMessage(){
+    @RequestMapping(value = "/sendMessage", method = RequestMethod.POST)
+    public Boolean sendMessage() throws InterruptedException {
+        Thread.sleep(1000000);
         boolean flag = false;
         Map<String, String> map = new HashMap<>();
         map.put("1", "消息1");

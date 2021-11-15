@@ -18,4 +18,5 @@ spring:
             simple:
                 retry:
                     enabled: true
+        virtual-host: /myhost
 
