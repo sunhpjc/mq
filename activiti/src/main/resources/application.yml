@@ -58,6 +58,9 @@ spring:
     #确认消息已经发送到交换机
     publisher-confirm-type: correlated #必须配置这个才能回调
     publisher-returns: true
+  jms:
+    cache:
+      enabled:
 mybatis:
   mapper-locations: classpath:mapper/*Dao.xml
   type-aliases-package: com.sunhp.activiti.com.sunhp.rocketmq1230producter18085.entity
