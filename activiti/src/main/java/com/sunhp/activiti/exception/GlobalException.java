@@ -39,7 +39,7 @@ public class GlobalException {
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ResultVO handleNullPointerException(NullPointerException ex) {
-        logger.error("空指针异常，{}", ex.getMessage());
+        logger.error("空指针异常，{}", ex);
         return new ResultVO<>(ResponseCodeEnum.NULLPOINT);
     }
 
@@ -51,6 +51,7 @@ public class GlobalException {
     public ResultVO handleBusinessError(MyException ex) {
         String code = ex.getCode();
         String message = ex.getMsg();
+        logger.info("系统异常 code:{} message:{}", code, message);
         return new ResultVO(code, message);
     }
 
