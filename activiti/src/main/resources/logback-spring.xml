@@ -161,7 +161,24 @@
         第一种把<root level="info">改成<root level="DEBUG">这样就会打印sql，不过这样日志那边会出现很多其他消息
         第二种就是单独给dao下目录配置debug模式，代码如下，这样配置sql语句会打印，其他还是正常info级别：
      -->
-
+    <!--sql 输出到文件-->
+    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/log_sql.log</file>
+        <!--日志文件输出格式-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/sql/log-sql-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--日志文件保留天数-->
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <append>true</append>
+    </appender>
 
     <!--
         root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性
@@ -170,28 +187,45 @@
         可以包含零个或多个元素，标识这个appender将会添加到这个logger。
     -->
 
-    <!--开发环境:打印控制台,应该用debug,我这里改为了info-->
+    <!--logger节点 获取哪些包下面的日志以及日志级别-->
+    <!--mapper包等可以打印sql日志-->
+    <logger name="com.sunhp.activiti.we_chat_inter.intf_test.annotation_test_ZhengTi.service" level="debug">
+        <appender-ref ref="SQL" /><!--此包下日志文件输出级别debug-->
+    </logger>
+
+    <!--开发环境:打印控制台,应该用debug,root不设置基础级别,实现控制台只有sql部分打印debug-->
     <springProfile name="dev">
-        <logger name="com.sunhp.activiti" level="info"/>
+        <root>
+            <!--root元素可以包含零个或多个appender-ref元素；被引用的每个appender都被添加到根记录器中。-->
+            <appender-ref ref="CONSOLE" />
+<!--            <appender-ref ref="DEBUG_FILE" />-->
+            <appender-ref ref="INFO_FILE" />
+            <appender-ref ref="WARN_FILE" />
+            <appender-ref ref="ERROR_FILE" />
+        </root>
     </springProfile>
 
-    <root level="info">
-        <appender-ref ref="CONSOLE" />
-        <!--<appender-ref ref="DEBUG_FILE" />
-        <appender-ref ref="INFO_FILE" />
-        <appender-ref ref="WARN_FILE" />
-        <appender-ref ref="ERROR_FILE" />-->
-    </root>
+    <springProfile name="sit">
+        <root>
+            <!--root元素可以包含零个或多个appender-ref元素；被引用的每个appender都被添加到根记录器中。-->
+            <appender-ref ref="CONSOLE" />
+            <!--测试环境不打印debug日志 只期望打印sql debug日志-->
+            <!--            <appender-ref ref="DEBUG_FILE" />-->
+            <appender-ref ref="INFO_FILE" />
+            <appender-ref ref="WARN_FILE" />
+            <appender-ref ref="ERROR_FILE" />
+        </root>
+    </springProfile>
 
-    <!--生产环境:输出到文件-->
-    <!--<springProfile name="pro">-->
-    <!--<root level="info">-->
-    <!--<appender-ref ref="CONSOLE" />-->
-    <!--<appender-ref ref="DEBUG_FILE" />-->
-    <!--<appender-ref ref="INFO_FILE" />-->
-    <!--<appender-ref ref="ERROR_FILE" />-->
-    <!--<appender-ref ref="WARN_FILE" />-->
-    <!--</root>-->
-    <!--</springProfile>-->
-
+    <!--可以使用一个xml文件定义springProfile指定环境 也可以使用多个文件使用maven -P参数指定使用哪个文件-->
+<!--    生产环境:输出到文件-->
+    <springProfile name="prod">
+        <root level="info">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="DEBUG_FILE" />
+            <appender-ref ref="INFO_FILE" />
+            <appender-ref ref="ERROR_FILE" />
+            <appender-ref ref="WARN_FILE" />
+        </root>
+    </springProfile>
 </configuration>

@@ -22,6 +22,7 @@ public class SmsChannelTwo_2 extends SmsAbstractService {
     @Override
     public Boolean sendSmsBatch() {
         log.info("渠道二批量发送");
+        log.debug("渠道二debug");
         return true;
     }
 

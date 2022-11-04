@@ -22,12 +22,14 @@ public class SmsChannelOne_1 extends SmsAbstractService {
     @Override
     public Boolean sendSmsSingle() {
         log.info("渠道一单条发送");
+        log.debug("测试debug");
         return true;
     }
 
     @Override
     public Map<Integer, String> smsBackStatus() {
         log.info("渠道一回执");
+        log.debug("测试debug");
         return null;
     }
 }

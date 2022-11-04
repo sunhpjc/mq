@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8082
 #数据源,使用druid连接池之后需要改变
 #spring:
 #  datasource:
@@ -61,19 +61,26 @@ spring:
   jms:
     cache:
       enabled:
+  profiles:
+    active: sit
 mybatis:
   mapper-locations: classpath:mapper/*Dao.xml
   type-aliases-package: com.sunhp.activiti.com.sunhp.rocketmq1230producter18085.entity
+  #暂时未测试
+  #configuration:
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #SQL只在控制台输出 不会输出到日志文件
 
 #showsql
-logging:
-  level:
-    com:
-      sunhp:
-        activiti:
-          mapper: info
+#logging:
+#  level:
+#    com:
+#      sunhp:
+#        activiti: info
+
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndDES
     iv-generator-classname: org.jasypt.iv.NoIvGenerator
     password: 123456
+logging:
+  config: classpath:logback-spring.xml
