@@ -25,7 +25,7 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>info</level>
+            <level>debug</level>
         </filter>
         <encoder>
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
@@ -162,7 +162,8 @@
         第二种就是单独给dao下目录配置debug模式，代码如下，这样配置sql语句会打印，其他还是正常info级别：
      -->
     <!--sql 输出到文件-->
-    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--仅做参考 正式环境可不使用SQL appender-->
+    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender" additivity="false">
         <file>${log.path}/log_sql.log</file>
         <!--日志文件输出格式-->
         <encoder>
@@ -179,7 +180,7 @@
         </rollingPolicy>
         <append>true</append>
     </appender>
-
+    将logger中的 additivity 属性配置为 false，则这个logger不会将日志流反馈到root中
     <!--
         root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性
         level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
@@ -190,7 +191,10 @@
     <!--logger节点 获取哪些包下面的日志以及日志级别-->
     <!--mapper包等可以打印sql日志-->
     <logger name="com.sunhp.activiti.we_chat_inter.intf_test.annotation_test_ZhengTi.service" level="debug">
-        <appender-ref ref="SQL" /><!--此包下日志文件输出级别debug-->
+        <!--此包下日志文件输出级别debug-->
+        <!--备注：仅做参考，实际root节点根目录INFO日志已经打印了，再打印debug会造成info日志重复-->
+<!--        <appender-ref ref="SQL" />-->
+        <appender-ref ref="CONSOLE" />
     </logger>
 
     <!--开发环境:打印控制台,应该用debug,root不设置基础级别,实现控制台只有sql部分打印debug-->
@@ -206,11 +210,12 @@
     </springProfile>
 
     <springProfile name="sit">
-        <root>
+        <!--root指定了info，不会影响logger节点的debug日志-->
+        <root level="info">
             <!--root元素可以包含零个或多个appender-ref元素；被引用的每个appender都被添加到根记录器中。-->
             <appender-ref ref="CONSOLE" />
             <!--测试环境不打印debug日志 只期望打印sql debug日志-->
-            <!--            <appender-ref ref="DEBUG_FILE" />-->
+            <appender-ref ref="DEBUG_FILE" />
             <appender-ref ref="INFO_FILE" />
             <appender-ref ref="WARN_FILE" />
             <appender-ref ref="ERROR_FILE" />
