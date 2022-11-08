@@ -13,4 +13,7 @@
 
 ##### 2.子节点<appender>：负责写日志的组件，它有两个必要属性name和class。name指定appender名称，class指定appender的全限定名。
 
+##### 3.xsd文件地址
+https://vgxitdata-1256295173.cos.ap-chengdu.myqcloud.com/logback.xsd
+
 
