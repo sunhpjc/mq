@@ -84,6 +84,13 @@
             <version>1.9.3</version>
         </dependency>
         <!--database End-->
+        <!--hutool begin-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.8.9</version>
+        </dependency>
+        <!--hutool end-->
 
         <!--rabbitMQ Begin-->
         <dependency>
