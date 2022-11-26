@@ -16,6 +16,8 @@
         <module>rocket-commons</module>
         <module>rocketmq-producter-8086</module>
         <module>drools</module>
+        <module>activiti7</module>
+        <module>activiti7-springboot</module>
     </modules>
 
     <!--统一jar包管理-->

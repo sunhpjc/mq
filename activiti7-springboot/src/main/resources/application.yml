@@ -1,0 +1,50 @@
+server:
+    port: 8083
+spring:
+    application:
+        name: activiti7
+    datasource:
+        #这两行名字错误导致以下报错
+        #data-username: root
+        #data-password: 123456
+        username: root
+        password: 123456
+        url: jdbc:mysql://localhost:3306/activiti7?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
+        driver-class-name: com.mysql.jdbc.Driver
+        type: com.alibaba.druid.pool.DruidDataSource
+        initialSize: 5
+        minIdle: 5
+        maxActive: 20
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        #配置监控统计拦截的filters,去掉后监控界面的sql无法统计，还可以设置参数wall用于防火墙，log4j
+        filters: stat
+        maxPoolPreparedStatementPerConnectionSize: 20
+        useGlobalDataSourceStat: true
+        connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    activiti:
+        database-schema-update: false
+        history-level: full
+        #在项目单独作为一个引擎，本身不部署流程的时候，如果resources目录没有“processes”目录，启动项目报错–找不到processes目录。需要在配置文件中添加以下内容：
+        #自动部署验证设置:true-开启（默认）、false-关闭 开启会校验有没有bpmn文件，没有会报错
+        check-process-definitions: false
+        process-definition-location-prefix: classpath:/processes/
+        process-definition-location-suffixes:
+            -**.bpmn
+            -**.bpmn20.xml
+        deployment-mode: never-fail
+        #生成Id是否包含uuid 可以不用配置 false：不使用uuid
+        use-strong-uuids: false
+mybatis:
+    mapper-locations: classpath:mapper/*Dao.xml
+    type-aliases-package: com.example.activiti7.com.entity
+
+logging:
+    level:
+        com.example: debug
+
