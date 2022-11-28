@@ -66,6 +66,13 @@ spring:
       enabled:
   profiles:
     active: sit
+#  mvc:
+#    view:
+#      prefix: /template/
+#      suffix: .html
+  thymeleaf:
+    prefix: classpath:/static/template/
+    suffix: .html
 mybatis:
   mapper-locations: classpath:mapper/*Dao.xml
   type-aliases-package: com.sunhp.activiti.com.sunhp.rocketmq1230producter18085.entity
